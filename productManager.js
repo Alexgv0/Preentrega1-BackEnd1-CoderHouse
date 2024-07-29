@@ -4,7 +4,7 @@ const productManager = {
 
     productsFilePath : "./files/products.txt",
 
-    async leerDatos() {
+    readData() {
         try {
             const data = fs.readFile(this.productsFilePath, "utf8");
             return data;
@@ -14,20 +14,22 @@ const productManager = {
         }
     },
 
-    async searchProductByID(products, id) {
+    searchProductByID(products, id) {
         const product = products.filter(actualProduct => actualProduct.id === id);
         return product;
     },
 
-    async ultimaId() {
+    ultimaId() {
         datos = leerDatos();
         if (datos) {
             return datos[datos.length - 1].id;
         } else return 0;
     },
 
+
+
     // Crea un producto nuevo con los parametros dados
-    async createProduct(title, description, code, price, status, stock, category, thumbnails) {
+    createProduct(title, description, code, price, status, stock, category, thumbnails) {
         return {
             id: ultimaId() + 1,
             title: title,

@@ -7,7 +7,7 @@ router.use(express.json());
 // Lista de todos los productos
 router.get("/", async (req, res) => {
     try {
-        const products = await productManager.returnProducts();
+        const products = JSON.parse(await productManager.readData());
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: "Error al listar productos" });
@@ -19,7 +19,7 @@ router.get("/", async (req, res) => {
 router.get("/:pid", async (req, res) => {
     try {
         const pid = parseInt(req.params.pid);
-        const products = await JSON.parse(await productManager.leerDatos());
+        const products = await JSON.parse(await productManager.readData());
         const product = await productManager.searchProductByID(products, pid);
         res.status(200).json(product);
     } catch (error) {
