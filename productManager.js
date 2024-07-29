@@ -7,11 +7,16 @@ const productManager = {
     async leerDatos() {
         try {
             const data = fs.readFile(this.productsFilePath, "utf8");
-            return JSON.parse(data);
+            return data;
         } catch (error) {
             console.error(`Error al leer datos: ${error}`);
             return 0;
         }
+    },
+
+    async searchProductByID(products, id) {
+        const product = products.filter(actualProduct => actualProduct.id === id);
+        return product;
     },
 
     async ultimaId() {
@@ -19,17 +24,6 @@ const productManager = {
         if (datos) {
             return datos[datos.length - 1].id;
         } else return 0;
-    },
-
-    // Devuelve todos los productos
-    async returnProducts() {
-        try {
-            const products = await fs.readFile(this.productsFilePath, "utf8");
-            return JSON.parse(products);
-        } catch (error) {
-            console.error("Error al leer productos: ", error);
-            throw new Error('Error al leer productos');
-        }
     },
 
     // Crea un producto nuevo con los parametros dados

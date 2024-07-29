@@ -16,7 +16,17 @@ router.get("/", async (req, res) => {
 });
 
 // Muestra el producto con el pid proporcionado
-router.get("/:pid", (req, res) => {});
+router.get("/:pid", async (req, res) => {
+    try {
+        const pid = parseInt(req.params.pid);
+        const products = await JSON.parse(await productManager.leerDatos());
+        const product = await productManager.searchProductByID(products, pid);
+        res.status(200).json(product);
+    } catch (error) {
+        res.status(500).json({ message: "Error al buscar producto" });
+        console.error("Error al buscar producto: ", error);
+    }
+});
 
 /* Agrega un nuevo producto con los campos:
 {
