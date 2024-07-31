@@ -1,5 +1,6 @@
 const express = require("express");
 const cartManager = require("../../cartManager");
+const { saveProducts } = require("../../productManager");
 const router = express.Router();
 
 // Middleware para analizar JSON
@@ -45,6 +46,20 @@ router.post("/", async (req, res) => {
 
     Además, si un producto ya existente intenta agregarse al producto, incrementar el campo quantity de dicho producto. 
 */
-router.post("/:cid/product/:pid", (req, res) => {});
+router.post("/:cid/product/:pid", async (req, res) => {
+    try {
+        const {cid, pid} = req.params;
+        const carts = await cartManager.addProductCarts(parseInt(cid), parseInt(pid));
+        if (carts === undefined) {
+            res.status(404).json({message: "No existe el carrito al que se intenta ingresar el producto"});
+            throw new Error("No existe el carrito al que se intenta ingresar el producto");
+        }
+        await cartManager.saveCarts(carts);
+        res.status(201).json({message: "Producto agregado al carrito correctamente", carts: carts});
+    } catch (error) {
+        console.error("Error desde router al agregar producto al carrito: ", error);
+        res.status(500).json({message: "No se pudo agregar el producto al carrito"});
+    }
+});
 
 module.exports = router;

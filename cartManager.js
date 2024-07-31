@@ -32,7 +32,6 @@ const cartManager = {
     async lastCartID() {
         try {
             const datos = await this.readCartsData();
-            console.log(datos);
             if (datos.length > 0) {
                 return datos[datos.length - 1].Id;
             } else {
@@ -53,7 +52,6 @@ const cartManager = {
                 Id : Id,
                 products : products
             };
-            console.log(newCart);
             return newCart;
         } catch (error) {
             console.error("Error al crear carrito: ", error);
@@ -79,6 +77,37 @@ const cartManager = {
             console.error("Error desde productManager al guardar los productos: ", error);
         }
     },
+
+    //
+    async addProductCarts(cid, pid) {
+        try {
+            if (await this.lastCartID() < cid) {
+                throw new Error("El carrito al que se esta intentando agregar un producto no existe");
+            }
+            const carts = await this.readCartsData();
+            carts.forEach((cart) => {
+                if ((cart.Id === parseInt(cid)) ){
+                    const productIndex = cart.products.findIndex((product) => product.product === parseInt(pid));
+                    if (productIndex >= 0) {
+                        cart.products[productIndex].quantity++;
+                        return;
+                    } else {
+                        cart.products.push({
+                            product: parseInt(pid),
+                            quantity: 1
+                        });
+                        return;
+                    }
+                }
+            });
+            if (carts === undefined) {
+                throw new Error("El carrito al que se esta intentando agregar un producto no existe");
+            }
+            return carts;
+        } catch (error) {
+            return console.error("Error desde cartManager al agregar productos en el carrito: ", error);
+        }
+    }
 };
 
 module.exports = cartManager;
