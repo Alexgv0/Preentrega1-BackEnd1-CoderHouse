@@ -13,8 +13,8 @@ router.get("/", async (req, res) => {
         const products = await productManager.readData();
         res.status(200).json(products);
     } catch (error) {
-        res.status(500).json({ message: "Error al listar productos" });
         console.error("Error al listar productos: ", error);
+        res.status(500).json({ message: "Error al listar productos" });
     }
 });
 
@@ -28,8 +28,8 @@ router.get("/:pid", async (req, res) => {
         }
         res.status(200).json(product);
     } catch (error) {
-        res.status(500).json({ message: "Error al buscar producto" });
         console.error("Error al buscar producto: ", error);
+        res.status(500).json({ message: "Error al buscar producto" });
     }
 });
 
@@ -77,7 +77,7 @@ router.put("/:pid", async (req, res) => {
         res.status(200).json({ message: "Producto actualizado exitosamente.", changes: changes });
     } catch (error) {
         console.error("Error desde el router al actualizar producto: ", error);
-        return res.status(404).json({ message: "Producto no encontrado." });
+        return res.status(500).json({ message: "Error al actualizar el producto" });
     }
 });
 
@@ -94,7 +94,7 @@ router.delete("/:pid", async (req, res) => {
         res.status(200).json({ message: "Producto eliminado exitosamente.", deleted: deletedProduct });
     } catch (error) {
         console.error("Error al eliminar producto: ", error);
-        return res.status(404).json({ message: "Producto no encontrado." });
+        return res.status(500).json({ message: "Error al eliminar el producto." });
     }
 });
 

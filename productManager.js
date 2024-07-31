@@ -30,14 +30,14 @@ const productManager = {
     },
 
     /* Busca por id dentro de el arreglo de productos de productos.txt 
-    y devuelve el producto con la id pasada por parametro */
+    y devuelve el producto con el id pasada por parametro */
     async searchProductByID(id) {
         const products = await this.readData();
         const product = products.filter(actualProduct => actualProduct.id === parseInt(id));
         return product;
     },
 
-    // Devuelve la ultima id de la lista de productos en products.txt
+    // Devuelve el ultimo id de la lista de productos en products.txt
     async lastID() {
         const datos = await this.readData();
         if (datos.length > 0) {
