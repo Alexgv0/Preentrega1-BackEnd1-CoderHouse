@@ -65,12 +65,12 @@ router.post("/", async (req, res) => {
 // Toma un producto y actualiza los campos enviados desde body sin modificar el id
 router.put("/:pid", async (req, res) => {
     try {
-        const { pid } = req.params;
+        const pid = parseInt(req.params.pid);
         if (pid < 1) {
             return res.status(404).json({ message: `El pid no es correcto, pid: ${pid}` });
         }
         const [product] = await productManager.searchProductByID(pid);
-        const changes = productManager.filterValidFields({ id: parseInt(pid), ...req.body }, product);
+        const changes = productManager.filterValidFields({ id: pid, ...req.body }, product);
         const newProducts = await productManager.updateProduct(changes);
         console.log(typeof newProducts, newProducts);
         await productManager.saveProducts(newProducts);
@@ -82,6 +82,20 @@ router.put("/:pid", async (req, res) => {
 });
 
 // Elimina el producto con el pid indicado
-router.delete("/:pid", (req, res) => {});
+router.delete("/:pid", async (req, res) => {
+    try {
+        const pid = parseInt(req.params.pid);
+        if (pid < 1) {
+            return res.status(404).json({ message: `El pid no es correcto, pid: ${pid}` });
+        }
+        const products = await productManager.readData();
+        const deletedProduct = await productManager.deleteProduct(products, pid);
+        await productManager.saveProducts(products);
+        res.status(200).json({ message: "Producto eliminado exitosamente.", deleted: deletedProduct });
+    } catch (error) {
+        console.error("Error al eliminar producto: ", error);
+        return res.status(404).json({ message: "Producto no encontrado." });
+    }
+});
 
 module.exports = router;

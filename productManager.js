@@ -98,6 +98,14 @@ const productManager = {
         });
         return newProducts;
     },
+
+    /* Elimina el producto con el id pasado por parametro de products que tambien es pasado por parametro,
+     devuelve el producto eliminado */
+    async deleteProduct(products, id) {
+        const productIndex = products.findIndex(actualProduct => actualProduct.id === id);
+        const deletedProduct = products.splice(productIndex, 1);
+        return deletedProduct;
+    },
 };
 
 module.exports = productManager;
