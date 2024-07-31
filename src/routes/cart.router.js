@@ -26,7 +26,17 @@ router.get("/:cid", async (req, res) => {
     products: Array que contendrá objetos que representen cada producto
 }
 */
-router.post("/", (req, res) => {});
+router.post("/", async (req, res) => {
+    try {
+        const cart = await cartManager.createCart(req.body[0]);
+        const carts = await cartManager.addCart(cart);
+        await cartManager.saveCarts(carts);
+        res.status(201).json({message : "carrito agregado correctamente", cart : cart})
+    } catch (error) {
+        console.error("Error al agregar carrito: ", error);
+        res.status(500).json({message : "Error al agregar carrito a los carritos"});
+    }
+});
 
 // Agrega el producto al arreglo “products” del carrito seleccionado, agregándose como un objeto bajo el siguiente formato:
 /*
