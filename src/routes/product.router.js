@@ -22,8 +22,10 @@ router.get("/", async (req, res) => {
 router.get("/:pid", async (req, res) => {
     try {
         const pid = parseInt(req.params.pid);
-        const products = await productManager.readData();
-        const product = await productManager.searchProductByID(products, pid);
+        const product = await productManager.searchProductByID(pid);
+        if (product.length === 0) {
+            return res.status(404).json({ message: `No existe el producto con id: ${pid}` });
+        }
         res.status(200).json(product);
     } catch (error) {
         res.status(500).json({ message: "Error al buscar producto" });
@@ -46,19 +48,38 @@ router.get("/:pid", async (req, res) => {
 */
 router.post("/", async (req, res) => {
     const { title, description, code, price, status, stock, category, thumbnails } = req.body;
-    console.log(req.body);
+    if (!(title || description || code || price || status || stock || category || thumbnails)) {
+        return res.status(400).json({ error: "Faltan campos requeridos" });
+    }
     try {
         const newProduct = await productManager.createProduct(title, description, code, price, status, stock, category, thumbnails);
-        await productManager.saveProduct(newProduct);
+        await productManager.addProducts(newProduct);
+        //console.log(`Producto agregado existosamente: ${JSON.stringify(newProduct)}`);
         res.status(201).json({ message: "Producto agregado a la lista de productos satisfactoriamente.", product: newProduct });
     } catch (error) {
-        console.error("Error desde router al guardar el producto: ", error)
+        console.error("Error desde router al guardar el producto: ", error);
         res.status(500).json({ error: "Error al agregar el producto" });
     }
 });
 
 // Toma un producto y actualiza los campos enviados desde body sin modificar el id
-router.put("/:pid", (req, res) => {});
+router.put("/:pid", async (req, res) => {
+    try {
+        const { pid } = req.params;
+        if (pid < 1) {
+            return res.status(404).json({ message: `El pid no es correcto, pid: ${pid}` });
+        }
+        const [product] = await productManager.searchProductByID(pid);
+        const changes = productManager.filterValidFields({ id: parseInt(pid), ...req.body }, product);
+        const newProducts = await productManager.updateProduct(changes);
+        console.log(typeof newProducts, newProducts);
+        await productManager.saveProducts(newProducts);
+        res.status(200).json({ message: "Producto actualizado exitosamente.", changes: changes });
+    } catch (error) {
+        console.error("Error desde el router al actualizar producto: ", error);
+        return res.status(404).json({ message: "Producto no encontrado." });
+    }
+});
 
 // Elimina el producto con el pid indicado
 router.delete("/:pid", (req, res) => {});

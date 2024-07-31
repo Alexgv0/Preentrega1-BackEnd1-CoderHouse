@@ -68,5 +68,18 @@
       "/images/bluetooth_speaker_1.png",
       "/images/bluetooth_speaker_2.png"
     ]
+  },
+  {
+    "id": 6,
+    "title": "Prueba",
+    "description": "Descripción de prueba",
+    "code": "CODE1234",
+    "price": 12.34,
+    "status": true,
+    "stock": 1,
+    "category": "Test",
+    "thumbnails": [
+      "thumbnail123.jpg"
+    ]
   }
 ]
